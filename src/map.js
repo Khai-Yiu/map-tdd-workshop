@@ -1,11 +1,30 @@
-function map(functionToApply, array) {
-    const mappedArray = [];
+function getIsPlainObject(value) {
+    return (
+        value !== null &&
+        typeof value === 'object' &&
+        value.constructor === Object
+    );
+}
 
-    for (let i = 0; i < array.length; i++) {
-        mappedArray[i] = functionToApply(array[i]);
+function map(func, functor) {
+    let mappedFunctor;
+    const isPlainObject = getIsPlainObject(functor);
+
+    if (Array.isArray(functor)) {
+        mappedFunctor = [];
+
+        for (let i = 0; i < functor.length; i++) {
+            mappedFunctor[i] = func(functor[i]);
+        }
+    } else if (isPlainObject) {
+        mappedFunctor = {};
+
+        for (const [key, value] of Object.entries(functor)) {
+            mappedFunctor[key] = func(value);
+        }
     }
 
-    return mappedArray;
+    return mappedFunctor;
 }
 
 export default map;
