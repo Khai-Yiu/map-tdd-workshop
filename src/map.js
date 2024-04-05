@@ -11,10 +11,14 @@ function map(func, functor) {
     const isPlainObject = checkIsPlainObject(functor);
 
     if (isPlainObject) {
-        mappedFunctor = {};
+        if (typeof functor.map === 'function' && functor.map.length === 1) {
+            mappedFunctor = functor.map(func);
+        } else {
+            mappedFunctor = {};
 
-        for (const [key, value] of Object.entries(functor)) {
-            mappedFunctor[key] = func(value);
+            for (const [key, value] of Object.entries(functor)) {
+                mappedFunctor[key] = func(value);
+            }
         }
     } else if (Array.isArray(functor)) {
         mappedFunctor = [];
@@ -23,8 +27,8 @@ function map(func, functor) {
             mappedFunctor[i] = func(functor[i]);
         }
     } else if (typeof functor === 'function') {
-        mappedFunctor = (value) => {
-            return func(functor(value));
+        mappedFunctor = (valueToMap) => {
+            return func(functor(valueToMap));
         };
     }
 
