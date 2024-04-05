@@ -15,14 +15,24 @@ function checkIsTransformer(value) {
 }
 
 function map(func, functor) {
+    if (functor === null || functor === undefined) {
+        throw new TypeError();
+    }
+
     let mappedFunctor;
 
     if (checkIsPlainObject(functor)) {
         if (typeof functor.map === 'function' && functor.map.length === 1) {
             mappedFunctor = functor.map(func);
         } else if (checkIsTransformer(functor)) {
+            const initialValue = functor['@@transducer/init'];
+            const result = functor['@@transducer/result'];
+            const step = functor['@@transducer/step'];
+
             mappedFunctor = {
-                f: func,
+                f: function add1(func) {
+                    return result(step(func, initialValue));
+                },
                 xf: functor
             };
         } else {
