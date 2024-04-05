@@ -14,7 +14,13 @@ function checkIsTransformer(value) {
     );
 }
 
-function map(func, functor) {
+function map(mapperFunction, functor) {
+    if (arguments.length === 1) {
+        return function (valueToMap) {
+            return map(mapperFunction, valueToMap);
+        };
+    }
+
     if (functor === null || functor === undefined) {
         throw new TypeError();
     }
@@ -23,7 +29,7 @@ function map(func, functor) {
 
     if (checkIsPlainObject(functor)) {
         if (typeof functor.map === 'function' && functor.map.length === 1) {
-            mappedFunctor = functor.map(func);
+            mappedFunctor = functor.map(mapperFunction);
         } else if (checkIsTransformer(functor)) {
             const initialValue = functor['@@transducer/init'];
             const result = functor['@@transducer/result'];
@@ -39,18 +45,18 @@ function map(func, functor) {
             mappedFunctor = {};
 
             for (const [key, value] of Object.entries(functor)) {
-                mappedFunctor[key] = func(value);
+                mappedFunctor[key] = mapperFunction(value);
             }
         }
     } else if (Array.isArray(functor)) {
         mappedFunctor = [];
 
         for (let i = 0; i < functor.length; i++) {
-            mappedFunctor[i] = func(functor[i]);
+            mappedFunctor[i] = mapperFunction(functor[i]);
         }
     } else if (typeof functor === 'function') {
         mappedFunctor = (valueToMap) => {
-            return func(functor(valueToMap));
+            return mapperFunction(functor(valueToMap));
         };
     }
 
