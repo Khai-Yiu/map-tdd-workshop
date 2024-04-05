@@ -37,4 +37,22 @@ describe('map', () => {
         };
         expect(map(add1, obj)).toEqual(101);
     });
+    it('dispatches to transformer objects', function () {
+        const listXf = {
+            '@@transducer/init': function () {
+                return [];
+            },
+            '@@transducer/step': function (acc, x) {
+                return acc.concat([x]);
+            },
+            '@@transducer/result': function (x) {
+                return x;
+            }
+        };
+
+        expect(map(add1, listXf)).toEqual({
+            f: add1,
+            xf: listXf
+        });
+    });
 });
