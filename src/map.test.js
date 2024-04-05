@@ -63,4 +63,9 @@ describe('map', () => {
             map(times2, undefined);
         }).toThrow(TypeError);
     });
+    it('composes', function () {
+        var mdouble = map(times2);
+        var mdec = map(dec);
+        expect(mdec(mdouble([10, 20, 30]))).toEqual([19, 39, 59]);
+    });
 });
