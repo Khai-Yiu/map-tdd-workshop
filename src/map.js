@@ -6,13 +6,25 @@ function checkIsPlainObject(value) {
     );
 }
 
+function checkIsTransformer(value) {
+    return (
+        typeof value['@@transducer/init'] === 'function' &&
+        typeof value['@@transducer/result'] === 'function' &&
+        typeof value['@@transducer/step'] === 'function'
+    );
+}
+
 function map(func, functor) {
     let mappedFunctor;
-    const isPlainObject = checkIsPlainObject(functor);
 
-    if (isPlainObject) {
+    if (checkIsPlainObject(functor)) {
         if (typeof functor.map === 'function' && functor.map.length === 1) {
             mappedFunctor = functor.map(func);
+        } else if (checkIsTransformer(functor)) {
+            mappedFunctor = {
+                f: func,
+                xf: functor
+            };
         } else {
             mappedFunctor = {};
 
