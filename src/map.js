@@ -1,27 +1,31 @@
-function getIsPlainObject(value) {
+function checkIsPlainObject(value) {
     return (
         value !== null &&
         typeof value === 'object' &&
-        value.constructor === Object
+        Object.getPrototypeOf(value) === Object.prototype
     );
 }
 
 function map(func, functor) {
     let mappedFunctor;
-    const isPlainObject = getIsPlainObject(functor);
+    const isPlainObject = checkIsPlainObject(functor);
 
-    if (Array.isArray(functor)) {
-        mappedFunctor = [];
-
-        for (let i = 0; i < functor.length; i++) {
-            mappedFunctor[i] = func(functor[i]);
-        }
-    } else if (isPlainObject) {
+    if (isPlainObject) {
         mappedFunctor = {};
 
         for (const [key, value] of Object.entries(functor)) {
             mappedFunctor[key] = func(value);
         }
+    } else if (Array.isArray(functor)) {
+        mappedFunctor = [];
+
+        for (let i = 0; i < functor.length; i++) {
+            mappedFunctor[i] = func(functor[i]);
+        }
+    } else if (typeof functor === 'function') {
+        mappedFunctor = (value) => {
+            return func(functor(value));
+        };
     }
 
     return mappedFunctor;
