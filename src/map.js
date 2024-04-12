@@ -6,7 +6,7 @@ function checkIsPlainObject(value) {
     );
 }
 
-function checkIsTransformer(value) {
+function checkIsTransformerOrTransducer(value) {
     return (
         value['xf'] ||
         (typeof value['@@transducer/init'] === 'function' &&
@@ -28,7 +28,7 @@ function map(mapperFunction, functor) {
 
     let mappedFunctor;
 
-    if (checkIsTransformer(functor)) {
+    if (checkIsTransformerOrTransducer(functor)) {
         mappedFunctor = {
             f: mapperFunction,
             xf: functor
