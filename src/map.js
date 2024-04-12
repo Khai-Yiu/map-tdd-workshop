@@ -7,7 +7,10 @@ function checkIsPlainObject(value) {
 }
 
 function checkIsTransducer(value) {
-    return value['xf'] && value['f'];
+    return (
+        typeof value.f === 'function' &&
+        (checkIsPlainObject(value.xf) || checkIsTransformer(value.xf))
+    );
 }
 
 function checkIsTransformer(value) {
