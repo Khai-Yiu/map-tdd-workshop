@@ -8,9 +8,7 @@ function checkIsPlainObject(value) {
 
 function checkIsTransformer(value) {
     return (
-        (checkIsPlainObject(value) &&
-            value['xf'] &&
-            checkIsTransformer(value['xf'])) ||
+        value['xf'] ||
         (typeof value['@@transducer/init'] === 'function' &&
             typeof value['@@transducer/result'] === 'function' &&
             typeof value['@@transducer/step'] === 'function')
@@ -30,14 +28,14 @@ function map(mapperFunction, functor) {
 
     let mappedFunctor;
 
-    if (checkIsPlainObject(functor)) {
+    if (checkIsTransformer(functor)) {
+        mappedFunctor = {
+            f: mapperFunction,
+            xf: functor
+        };
+    } else if (checkIsPlainObject(functor)) {
         if (typeof functor.map === 'function' && functor.map.length === 1) {
             mappedFunctor = functor.map(mapperFunction);
-        } else if (checkIsTransformer(functor)) {
-            mappedFunctor = {
-                f: mapperFunction,
-                xf: functor
-            };
         } else {
             mappedFunctor = {};
 

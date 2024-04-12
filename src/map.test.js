@@ -77,4 +77,10 @@ describe('map', () => {
         expect(xcomp.xf).toEqual({ xf: listXf, f: times2 });
         expect(xcomp.f).toEqual(dec);
     });
+    it.skip('correctly uses fantasy-land implementations', function () {
+        var m1 = Id(1);
+        var m2 = map(R.add(1), m1);
+
+        expect(m1.value + 1).toEqual(m2.value);
+    });
 });
