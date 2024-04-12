@@ -6,12 +6,15 @@ function checkIsPlainObject(value) {
     );
 }
 
-function checkIsTransformerOrTransducer(value) {
+function checkIsTransducer(value) {
+    return value['xf'] && value['f'];
+}
+
+function checkIsTransformer(value) {
     return (
-        value['xf'] ||
-        (typeof value['@@transducer/init'] === 'function' &&
-            typeof value['@@transducer/result'] === 'function' &&
-            typeof value['@@transducer/step'] === 'function')
+        typeof value['@@transducer/init'] === 'function' &&
+        typeof value['@@transducer/result'] === 'function' &&
+        typeof value['@@transducer/step'] === 'function'
     );
 }
 
@@ -28,7 +31,7 @@ function map(mapperFunction, functor) {
 
     let mappedFunctor;
 
-    if (checkIsTransformerOrTransducer(functor)) {
+    if (checkIsTransformer(functor) || checkIsTransducer(functor)) {
         mappedFunctor = {
             f: mapperFunction,
             xf: functor
