@@ -1,4 +1,5 @@
 import map from './map';
+import R from 'ramda';
 
 describe('map', () => {
     var times2 = function (x) {
@@ -9,6 +10,18 @@ describe('map', () => {
     };
     var dec = function (x) {
         return x - 1;
+    };
+
+    const listXf = {
+        '@@transducer/init': function () {
+            return [];
+        },
+        '@@transducer/step': function (acc, x) {
+            return acc.concat([x]);
+        },
+        '@@transducer/result': function (x) {
+            return x;
+        }
     };
 
     it('maps simple functions over arrays', () => {
@@ -37,19 +50,7 @@ describe('map', () => {
         };
         expect(map(add1, obj)).toEqual(101);
     });
-    it.skip('dispatches to transformer objects', function () {
-        const listXf = {
-            '@@transducer/init': function () {
-                return [];
-            },
-            '@@transducer/step': function (acc, x) {
-                return acc.concat([x]);
-            },
-            '@@transducer/result': function (x) {
-                return x;
-            }
-        };
-
+    it('dispatches to transformer objects', function () {
         expect(map(add1, listXf)).toEqual({
             f: add1,
             xf: listXf
@@ -67,5 +68,13 @@ describe('map', () => {
         var mdouble = map(times2);
         var mdec = map(dec);
         expect(mdec(mdouble([10, 20, 30]))).toEqual([19, 39, 59]);
+    });
+    it('can compose transducer-style', function () {
+        var mdouble = map(times2);
+        var mdec = map(dec);
+        var xcomp = mdec(mdouble(listXf));
+
+        expect(xcomp.xf).toEqual({ xf: listXf, f: times2 });
+        expect(xcomp.f).toEqual(dec);
     });
 });
