@@ -8,9 +8,12 @@ function checkIsPlainObject(value) {
 
 function checkIsTransformer(value) {
     return (
-        typeof value['@@transducer/init'] === 'function' &&
-        typeof value['@@transducer/result'] === 'function' &&
-        typeof value['@@transducer/step'] === 'function'
+        (checkIsPlainObject(value) &&
+            value['xf'] &&
+            checkIsTransformer(value['xf'])) ||
+        (typeof value['@@transducer/init'] === 'function' &&
+            typeof value['@@transducer/result'] === 'function' &&
+            typeof value['@@transducer/step'] === 'function')
     );
 }
 
@@ -31,14 +34,8 @@ function map(mapperFunction, functor) {
         if (typeof functor.map === 'function' && functor.map.length === 1) {
             mappedFunctor = functor.map(mapperFunction);
         } else if (checkIsTransformer(functor)) {
-            const initialValue = functor['@@transducer/init'];
-            const result = functor['@@transducer/result'];
-            const step = functor['@@transducer/step'];
-
             mappedFunctor = {
-                f: function add1(func) {
-                    return result(step(func, initialValue));
-                },
+                f: mapperFunction,
                 xf: functor
             };
         } else {
