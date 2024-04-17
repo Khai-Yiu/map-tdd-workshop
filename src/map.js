@@ -37,6 +37,15 @@ function map(mapperFunction, functor) {
 
     if (checkIsTransformer(functor) || checkIsTransducer(functor)) {
         mappedFunctor = {
+            '@@transducer/init': functor['@@transducer/init'],
+            '@@transducer/result': functor['@@transducer/result'],
+            '@@transducer/step': function (result, value) {
+                return functor['@@transducer/step'](
+                    result,
+                    mapperFunction(value)
+                );
+            },
+
             f: mapperFunction,
             xf: functor
         };

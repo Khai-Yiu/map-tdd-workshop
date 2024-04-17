@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "test",
+    "test": "jest",
     "test:watch": "jest --watch",
     "format": "prettier --write ."
   },
