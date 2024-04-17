@@ -83,4 +83,10 @@ describe('map', () => {
 
         expect(m1.value + 1).toEqual(m2.value);
     });
+    it('can act as a transducer', function () {
+        expect(R.into([], map(times2), [1, 2, 3, 4])).toEqual([2, 4, 6, 8]);
+        expect(
+            R.transduce(map(times2), R.flip(R.append), [], [1, 2, 3, 4])
+        ).toEqual([2, 4, 6, 8]);
+    });
 });
